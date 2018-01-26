@@ -2,7 +2,9 @@ module GildedRose where
 
 type GildedRose = [Item]
 
-data Item = Item String Int Int
+-- an Item with name, sellIn and quality
+data Item =
+  Item String Int Int
   deriving (Eq)
 
 instance Show Item where
@@ -13,32 +15,19 @@ updateQuality :: GildedRose -> GildedRose
 updateQuality = map updateQualityItem
 
 updateQualityItem :: Item -> Item
-updateQualityItem item@(Item name sellIn quality) =
-  if name == "Aged Brie"
-  then
-    updateQualityCheese item
-  else if name == "Backstage passes to a TAFKAL80ETC concert"
-  then
-    updateQualityBackstagePasses item
-  else if name == "Sulfuras, Hand of Ragnaros"
-  then
-    updateQualityLegendary item
-  else
-    updateQualityRegular item
+updateQualityItem item@(Item "Aged Brie" _ _)                                 = updateQualityCheese item
+updateQualityItem item@(Item "Backstage passes to a TAFKAL80ETC concert" _ _) = updateQualityBackstagePasses item
+updateQualityItem item@(Item "Sulfuras, Hand of Ragnaros" _ _)                = updateQualityLegendary item
+updateQualityItem item                                                        = updateQualityRegular item
 
 updateQualityCheese :: Item -> Item
-updateQualityCheese (Item name sellIn quality) =
-  let
+updateQualityCheese (Item name sellIn quality) | sellIn' >= 0 = Item name sellIn' quality'
+                                               | otherwise    = Item name sellIn' quality
+  where
     quality' | quality < 50 = quality + 1
              | otherwise    = quality
-    sellIn' = sellIn - 1      
-  in
-    if sellIn' < 0
-      then
-          if quality' < 50
-          then (Item name sellIn' (quality' + 1))
-          else (Item name sellIn' quality)
-      else (Item name sellIn' quality')
+    sellIn' = sellIn - 1
+
 
 updateQualityBackstagePasses :: Item -> Item
 updateQualityBackstagePasses (Item name sellIn quality) =
